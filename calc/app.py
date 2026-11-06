@@ -51,7 +51,7 @@ def execute():
 
     value = add(*arguments) if kind == "add" else divide(*arguments)
     record = {"operation": kind, "arguments": arguments, "result": value}
-    failure = notify_history(record)
+    failure = None
     if failure is not None:
         return failure
     return jsonify(record), 200
