@@ -35,3 +35,35 @@ jobs:
       - name: Stop calc and its stub
         if: always()
         run: docker compose -f compose.calc.yaml down
+
+      # Component tests: string alone, with the stub of history
+      - name: Start string and its stub
+        run: docker compose -f compose.string.yaml up --build -d --wait
+
+      - name: Component tests of string
+        working-directory: tests/bruno
+        run: bru run string string-stub --env string-component
+
+      - name: Show the logs of string and its stub
+        if: failure()
+        run: docker compose -f compose.string.yaml logs
+
+      - name: Stop string and its stub
+        if: always()
+        run: docker compose -f compose.string.yaml down
+
+      # Integration tests: the same requests, on the whole application
+      - name: Start the whole application
+        run: docker compose up --build -d --wait
+
+      - name: Integration tests
+        working-directory: tests/bruno
+        run: bru run calc string --env integration
+
+      - name: Show the logs of the application
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop the whole application
+        if: always()
+        run: docker compose down
